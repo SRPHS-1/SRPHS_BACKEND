@@ -9,3 +9,4 @@ bcrypt
 motor
 beanie
 python-dotenv
+email-validator
