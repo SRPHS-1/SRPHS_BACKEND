@@ -129,3 +129,6 @@ pip install bcrypt
 
 # Instala la librería que permite leer las variables secretas desde el archivo .env.
 pip install python-dotenv
+
+# Instala la librería oficial de Google que permite que el código de Python "hable" con sus modelos de inteligencia artificial más avanzados
+pip install google-generativeai
