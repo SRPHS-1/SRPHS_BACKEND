@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Literal
 
 class PredictionInput(BaseModel):
     # Atributos biológicos y demográficos
@@ -24,3 +25,6 @@ class PredictionInput(BaseModel):
     # Consumo de sustancias y transporte
     CALC: str                           # Consumo de alcohol ('Sometimes', 'Frequently', 'Always', 'no')
     MTRANS: str                         # Medio de transporte principal ('Public_Transportation', 'Walking', 'Automobile', 'Motorbike', 'Bike')
+    
+    # Objetivo del usuario 
+    goal: Literal["perder", "mantener", "ganar"] = "mantener"
