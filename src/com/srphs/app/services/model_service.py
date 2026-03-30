@@ -5,17 +5,18 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
 
-DATA_PATH = "src/com/srphs/data/obesity_data.csv"
-MODEL_PATH = "src/com/srphs/models/obesity_rf_model.joblib"
-ENCODER_PATH = "src/com/srphs/models/label_encoders.joblib"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+APP_DIR  = os.path.dirname(BASE_DIR)
+
+DATA_PATH    = os.path.join(APP_DIR, "data",   "obesity_data.csv")
+MODEL_PATH   = os.path.join(APP_DIR, "models", "obesity_rf_model.joblib")
+ENCODER_PATH = os.path.join(APP_DIR, "models", "label_encoders.joblib")
 
 def train_model():
     df = pd.read_csv(DATA_PATH)
-    
+
     encoders = {}
-    categorical_cols = df.select_dtypes(include=['object']).columns
-    
-    for col in categorical_cols:
+    for col in df.select_dtypes(include=['object']).columns:
         le = LabelEncoder()
         df[col] = le.fit_transform(df[col])
         encoders[col] = le
@@ -28,15 +29,10 @@ def train_model():
     model = RandomForestClassifier(n_estimators=100, random_state=42)
     model.fit(X_train, y_train)
 
-    if not os.path.exists('models'):
-        os.makedirs('models')
-        
+    os.makedirs(os.path.dirname(MODEL_PATH), exist_ok=True)
     joblib.dump(model, MODEL_PATH)
     joblib.dump(encoders, ENCODER_PATH)
-    
+
     accuracy = model.score(X_test, y_test)
-    print(f"✅ Modelo entrenado con éxito. Precisión (Accuracy): {accuracy:.2%}")
+    print(f"✅ Modelo entrenado. Precisión: {accuracy:.2%}")
     return accuracy
-
-
-train_model()

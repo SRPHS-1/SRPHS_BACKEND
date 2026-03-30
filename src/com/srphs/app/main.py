@@ -24,6 +24,10 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, "models", "obesity_rf_model.joblib")
 ENCODER_PATH = os.path.join(BASE_DIR, "models", "label_encoders.joblib")
 
+if not os.path.exists(MODEL_PATH) or not os.path.exists(ENCODER_PATH):
+    from .services.model_service import train_model
+    train_model()
+    
 ai_service     = AIService(MODEL_PATH, ENCODER_PATH)
 auth_service   = AuthService()
 google_service = GoogleAuthService()
