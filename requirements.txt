@@ -6,9 +6,12 @@ beanie
 motor
 python-dotenv
 passlib[bcrypt]
-google-generativeai
+bcrypt
 scikit-learn
 pandas
 shap
 joblib
 google-genai
+google-auth
+google-auth-oauthlib
+ 

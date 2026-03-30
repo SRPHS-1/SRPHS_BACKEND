@@ -36,4 +36,5 @@ logs/
 
 # Sistema operativo
 .DS_Store
-Thumbs.db
+Thumbs.db*.joblib
+src/com/srphs/app/data/*.csv
