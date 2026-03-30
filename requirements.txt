@@ -2,7 +2,7 @@ fastapi
 uvicorn
 pydantic[email]
 email-validator
-beanie
+beanie==1.30.0
 motor
 python-dotenv
 passlib[bcrypt]
