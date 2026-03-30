@@ -1,134 +1,187 @@
-# 📌 SRPHS – Sistema de Recomendación para Hábitos Saludables
+# 🌿 SRPHS — Sistema de Recomendación para Hábitos Saludables
 
-## 👤 Developers
-- **Juan Pablo Caballero** - *FullStack | Cloud | AI | Database*
-- **Robinson Nuñez** - *Collaborator & Frontend Partner*
+> Backend inteligente con FastAPI, Random Forest, SHAP y Gemini AI
+
+[![Python](https://img.shields.io/badge/Python-3.12-3670A0?style=flat-square&logo=python&logoColor=ffdd54)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.135-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=flat-square&logo=mongodb&logoColor=white)](https://mongodb.com)
+[![Render](https://img.shields.io/badge/Deployed-Render-46E3B7?style=flat-square&logo=render&logoColor=white)](https://srphs-backend.onrender.com)
+
+**API en producción:** https://srphs-backend.onrender.com  
+**Documentación interactiva:** https://srphs-backend.onrender.com/docs
+
+---
+
+## 👥 Desarrolladores
+
+| Nombre | Rol |
+|---|---|
+| **Juan Pablo Caballero** | FullStack · Cloud · AI · Database |
+| **Robinson Núñez** | Collaborator & Frontend Partner · AI · Database  |
+
+---
 
 ## 📑 Contenido
-1. [Descripción del Proyecto](#-descripción-del-proyecto)
-2. [Arquitectura del Proyecto](#-arquitectura-del-proyecto)
-3. [Documentación API](#-api-endpoints)
-4. [Inteligencia Artificial y XAI](#-inteligencia-artificial-y-xai)
-5. [Tecnologías](#-tecnologías)
-6. [Estrategia de Branches](#-branch-strategy--structure)
-7. [Getting Started](#-getting-started)
-8. [Variables de Envornno](#-variables-de-entorno)
+
+1. [Descripción](#-descripción)
+2. [Arquitectura](#-arquitectura)
+3. [Endpoints API](#-endpoints-api)
+4. [Inteligencia Artificial](#-inteligencia-artificial)
+5. [Stack tecnológico](#-stack-tecnológico)
+6. [Instalación local](#-instalación-local)
+7. [Variables de entorno](#-variables-de-entorno)
+8. [Estructura del proyecto](#-estructura-del-proyecto)
 
 ---
 
-## 📝 Descripción del Proyecto
+## 📝 Descripción
 
-El **SRPHS** es una plataforma inteligente diseñada para la prevención de riesgos metabólicos y obesidad. Utiliza modelos de **Machine Learning** para analizar hábitos de vida y proporciona recomendaciones personalizadas.
+SRPHS es una plataforma inteligente para la prevención de riesgos metabólicos y obesidad. Analiza hábitos de vida del usuario mediante **Machine Learning** y genera recomendaciones personalizadas usando **Gemini AI**, explicando el razonamiento con **SHAP (XAI)**.
 
----
-
-## 🏢 Arquitectura del Proyecto
-
-El backend está construido con **FastAPI** siguiendo una estructura modular que separa los modelos de datos de la lógica de negocio:
-
-- **🧠 Models:** Definición de documentos para MongoDB usando **Beanie ODM** (User y HealthRecord).
-- **⚙️ Services/ML:** Carga de modelos `.joblib` y procesamiento de datos con Pandas/NumPy.
-- **🔌 API Routes:** Endpoints optimizados para registro, login, predicción y analítica.
-- **💾 Database:** Persistencia asíncrona en **MongoDB Atlas**.
+**Flujo principal:**
+1. El usuario ingresa sus datos (edad, peso, altura, hábitos alimenticios, actividad física, etc.)
+2. Un modelo **Random Forest** predice su nivel de riesgo de obesidad
+3. **SHAP** identifica los factores que más influyen en el resultado
+4. **Gemini Flash** genera recomendaciones concretas y personalizadas según el objetivo del usuario (perder / mantener / ganar peso)
+5. El historial queda guardado en **MongoDB Atlas** para seguimiento evolutivo
 
 ---
 
-## 📂 Estructura del Proyecto
+## 🏗️ Arquitectura
+
 ```
-:📂 SRPHS_BACKEND
-┣ :📂 src/
-┃ ┣ :📂 com/srphs/app/
-┃ ┃ ┣ 📄 main.py                # Punto de entrada de FastAPI
-┃ ┃ ┣ :📂 models/               # Modelos de Beanie (User, Record)
-┃ ┃ ┣ :📂 schemas/              # Validaciones de Pydantic
-┃ ┃ ┣ :📂 database/             # Configuración de MongoDB (Repository)
-┃ ┃ ┗ :📂 ml_models/            # Archivos .joblib (RF Model)
-┣ 📄 .env                       # Variables críticas 
-┗ 📄 README.md
+SRPHS_BACKEND/
+└── src/com/srphs/app/
+    ├── main.py               # Punto de entrada FastAPI + CORS + rutas
+    ├── database/
+    │   └── repository.py     # Inicialización Beanie + MongoDB
+    ├── models/
+    │   ├── user.py           # Documento User (Beanie)
+    │   └── record.py         # Documento HealthRecord (Beanie)
+    ├── schemas/
+    │   └── schemas.py        # Validación de entrada (Pydantic)
+    ├── services/
+    │   ├── ai_service.py     # Random Forest + SHAP + Gemini
+    │   ├── auth_service.py   # Hash y verificación de contraseñas (bcrypt)
+    │   ├── gemini_service.py # Generación de recomendaciones con Gemini
+    │   ├── google_auth_service.py  # Verificación de tokens OAuth2 Google
+    │   └── model_service.py  # Entrenamiento del modelo (auto-train)
+    └── data/
+        └── obesity_data.csv  # Dataset de entrenamiento
 ```
 
 ---
 
-## 📡 API Endpoints
+## 📡 Endpoints API
 
-La documentación interactiva se encuentra disponible vía **Swagger UI**:  
-🔗 `http://127.0.0.1:8000/docs`
+### Autenticación local
 
-### Principales Rutas:
-- `POST /register`: Registro de nuevos usuarios con hashing de seguridad.
-- `POST /login`: Validación de credenciales.
-- `POST /predict`: Generación de diagnóstico IA y guardado en historial.
-- `GET /history/{email}`: Recuperación de la evolución del usuario.
-- `GET /analytics/{email}`: Resumen estadístico de factores críticos.
+| Método | Ruta | Descripción |
+|---|---|---|
+| `POST` | `/register` | Registro con email y contraseña |
+| `POST` | `/login` | Login con email y contraseña |
 
----
+### Autenticación Google OAuth2
 
-## 🤖 Inteligencia Artificial y XAI
+| Método | Ruta | Descripción |
+|---|---|---|
+| `POST` | `/auth/google/register` | Registro con cuenta de Google |
+| `POST` | `/auth/google/login` | Login con cuenta de Google |
 
-El sistema no solo predice, sino que explica sus decisiones:
-- **Modelo:** Random Forest Classifier optimizado.
-- **XAI (SHAP):** Implementación de *Shapley Additive Explanations* para identificar qué hábitos específicos (CH2O, FAF, etc.) impactan más en el usuario, permitiendo generar recomendaciones humanas y coherente.
+### Predicción y datos
 
----
-
-## 🧰 Tecnologías
-
-### Backend & AI
-![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
-![FastAPI](https://img.shields.io/badge/FastAPI-0058ED?style=for-the-badge&logo=fastapi&logoColor=white)
-![Scikit-Learn](https://img.shields.io/badge/scikit--learn-%23F7931E.svg?style=for-the-badge&logo=scikit-learn&logoColor=white)
-![Pandas](https://img.shields.io/badge/pandas-%23150458.svg?style=for-the-badge&logo=pandas&logoColor=white)
-
-### Database & Security
-![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white)
-![Bcrypt](https://img.shields.io/badge/Bcrypt-Security-blue?style=for-the-badge)
-
-### Design & Documentation
-![Swagger](https://img.shields.io/badge/-Swagger-%23Clojure?style=for-the-badge&logo=swagger&logoColor=white)
-![Figma](https://img.shields.io/badge/figma-%23F24E1E.svg?style=for-the-badge&logo=figma&logoColor=white)
-![Render](https://img.shields.io/badge/render-%23F24E.svg?style=for-the-badge&logo=render&logoColor=white)
+| Método | Ruta | Descripción |
+|---|---|---|
+| `POST` | `/predict` | Genera predicción + recomendaciones IA |
+| `GET` | `/history/{email}` | Historial de evaluaciones del usuario |
+| `GET` | `/analytics/{email}` | Resumen estadístico del usuario |
 
 ---
 
-## ⚡ Getting Started
+## 🤖 Inteligencia Artificial
 
-### 1️ Preparar el Entorno (Windows)
+### Modelo predictivo
+- **Algoritmo:** Random Forest Classifier (`scikit-learn`)
+- **Dataset:** 2.111 registros con 17 variables de hábitos de vida
+- **Precisión:** ~95.5% en conjunto de prueba
+- **Auto-entrenamiento:** Si los archivos `.joblib` no existen al iniciar, el modelo se entrena automáticamente
+
+### Variables de entrada
+El modelo analiza: género, edad, altura, peso, antecedentes familiares, consumo de alimentos hipercalóricos, frecuencia de vegetales, número de comidas, snacks entre comidas, tabaquismo, consumo de agua, monitoreo de calorías, actividad física, tiempo en pantallas, alcohol y medio de transporte.
+
+### Explicabilidad (SHAP)
+Tras la predicción, **SHAP TreeExplainer** identifica los 3 factores con mayor impacto en el resultado, que luego se pasan a Gemini para generar recomendaciones dirigidas.
+
+### Recomendaciones con Gemini
+`gemini-2.5-flash` (con fallback a versiones anteriores) recibe el diagnóstico, los factores SHAP y el **objetivo personal del usuario** (perder / mantener / ganar peso) para generar 3 recomendaciones concretas y motivadoras en formato JSON.
+
+---
+
+## 🧰 Stack tecnológico
+
+| Capa | Tecnología |
+|---|---|
+| Framework | FastAPI 0.135 |
+| ML | scikit-learn, SHAP, pandas |
+| IA generativa | Google Gemini Flash (google-genai) |
+| Base de datos | MongoDB Atlas + Motor + Beanie 1.30 |
+| Auth | bcrypt + Google OAuth2 |
+| Deploy | Render (free tier) |
+
+---
+
+## ⚡ Instalación local
 
 ```bash
-# Crear entorno virtual
+# 1. Clonar el repositorio
+git clone https://github.com/SRPHS-1/SRPHS_BACKEND.git
+cd SRPHS_BACKEND
 
+# 2. Crear y activar entorno virtual
 python -m venv venv
+.\venv\Scripts\activate      # Windows
+source venv/bin/activate     # Mac/Linux
 
-# Activar entorno virtual
+# 3. Instalar dependencias
+pip install -r requirements.txt
 
-.\venv\Scripts\activate
+# 4. Configurar variables de entorno
+cp .env.example .env
+# Editar .env con tus credenciales
 
-# Instalar dependencias necesarias
-
-pip install fastapi uvicorn pandas numpy scikit-learn shap joblib bcrypt motor beanie python-dotenv
-
-# Ejecuta un servidor web que pone en línea el API de FastAPI y se reinicia automáticamente cada vez que se guarda un cambio en el código.
-
+# 5. Levantar el servidor
 uvicorn src.com.srphs.app.main:app --reload
+```
 
-# Instala el combo para manejar seguridad de contraseñas, conexión asíncrona a MongoDB, el mapeo de objetos (ODM) y validación de correos.
+La API estará disponible en `http://localhost:8000` y la documentación en `http://localhost:8000/docs`.
 
-pip install passlib[bcrypt] motor beanie email-validator
+> **Nota:** El modelo se entrena automáticamente al primer arranque si no existe el archivo `.joblib`. Esto puede tomar ~30 segundos.
 
-# Instala la librería de Inteligencia Artificial Explicable (XAI) que permite entender qué variables afectan más a la predicción.
+---
 
-pip install shap
+## 🔐 Variables de entorno
 
-# Instala las herramientas necesarias para que Python se comunique con MongoDB de forma asíncrona.
+Crea un archivo `.env` en la raíz del proyecto:
 
-pip install motor beanie
+```env
+MONGO_URI=mongodb+srv://usuario:password@cluster.mongodb.net/SRPHS_DB
+GEMINI_API_KEY=tu_gemini_api_key
+GOOGLE_CLIENT_ID=tu_google_oauth_client_id
+PORT=8000
+PYTHON_VERSION=3.12
+```
 
-# Instala el algoritmo de cifrado para encriptar las contraseñas de los usuarios de forma segura antes de guardarlas.
+| Variable | Descripción |
+|---|---|
+| `MONGO_URI` | Cadena de conexión a MongoDB Atlas |
+| `GEMINI_API_KEY` | API key de Google AI Studio |
+| `GOOGLE_CLIENT_ID` | Client ID de Google Cloud Console (OAuth2) |
+| `PORT` | Puerto del servidor (Render lo asigna automáticamente) |
 
-pip install bcrypt
+---
 
-# Instala la librería que permite leer las variables secretas desde el archivo .env.
-pip install python-dotenv
+## 📌 Notas de despliegue
 
-# Instala la librería oficial de Google que permite que el código de Python "hable" con sus modelos de inteligencia artificial más avanzados
-pip install google-generativeai
+- El backend está desplegado en **Render** (free tier) — puede tardar ~50 segundos en responder tras inactividad (cold start).
+- Los archivos `.joblib` del modelo **no se versionan** en Git. Se generan automáticamente en el primer arranque mediante `model_service.py`.
+- El CORS está configurado para aceptar requests desde `localhost:5173` y el dominio de Vercel del frontend.
