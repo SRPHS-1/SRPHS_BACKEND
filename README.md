@@ -47,10 +47,21 @@ SRPHS es una plataforma inteligente para la prevención de riesgos metabólicos 
 
 ---
 
+## 📄 Documentación del proyecto
+
+| Documento | Descripción |
+|---|---|
+| [📘 Informe técnico](docs/Proyecto_SRPHS_CaballeroJuan_NuñezRobinson.pdf) | Sistema de recomendación personalizada de hábitos saludables — Documento académico del proyecto de IA |
+
+---
+
+
 ## 🏗️ Arquitectura
 
 ```
 SRPHS_BACKEND/
+└──docs
+    ├──Proyecto_SRPHS_CaballeroJuan_NuñezRobinson.pdf
 └── src/com/srphs/app/
     ├── main.py               # Punto de entrada FastAPI + CORS + rutas
     ├── database/
