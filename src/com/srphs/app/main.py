@@ -3,8 +3,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from .database.repository import init_db
-from .controllers.auth_controller import router as auth_router
-from .controllers.health_controller import router as health_router
+from .presenters.auth_presenter import router as auth_router
+from .presenters.health_presenter import router as health_router
 
 load_dotenv()
 
