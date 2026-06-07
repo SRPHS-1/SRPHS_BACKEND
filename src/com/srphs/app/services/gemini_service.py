@@ -17,8 +17,13 @@ class GeminiRecommendationService:
             raise ValueError("No GEMINI_API_KEY found in environment variables")
 
         self.client = Client(api_key=api_key)
-        self.model_id = "gemini-1.5-flash"
-        print(f"DEBUG - Configurado para usar modelo: {self.model_id}")
+        try:
+            response = self.client.models.list()
+            self.model_id = next((m.name for m in response if "gemini-1.5-flash" in m.name), "gemini-1.5-flash")
+        except Exception:
+            self.model_id = "gemini-1.5-flash"
+            
+        print(f"DEBUG - Usando modelo detectado/fallback: {self.model_id}")
 
     def generate_personalized_recommendations(
         self,
