@@ -84,14 +84,19 @@ class AIService:
         try:
             clean_text = smart_recs_raw.strip().replace("```json", "").replace("```", "")
             smart_recs_dict = json.loads(clean_text)
-            lista_para_db = smart_recs_dict.get(
-                "acciones", ["Seguir indicaciones médicas"]
-            )
-        except Exception:
+            
+            lista_para_db = smart_recs_dict.get("acciones")
+            if not lista_para_db or not isinstance(lista_para_db, list):
+                raise ValueError("Formato de acciones inválido en la respuesta de la IA")
+                
+        except Exception as e:
+            print(f"DEBUG - ERROR DE PARSEO O LLAMADA IA: {e}")
+            print(f"DEBUG - Texto recibido de IA: {smart_recs_raw}")
+            
             lista_para_db = [
-                "Mantener hábitos saludables",
-                "Consultar a su médico",
-                "Seguir monitoreando su peso",
+                "Error al generar sugerencias (check logs)", 
+                "Mantener hidratación", 
+                "Consultar nutricionista"
             ]
 
         return result_label, lista_para_db, feature_importance, goal
