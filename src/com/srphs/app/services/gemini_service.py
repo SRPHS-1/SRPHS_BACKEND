@@ -1,4 +1,5 @@
 import os
+import json
 from google.genai import Client
 from dotenv import load_dotenv
 
@@ -17,7 +18,8 @@ class GeminiRecommendationService:
             raise ValueError("No GEMINI_API_KEY found")
         
         self.client = Client(api_key=api_key)
-        self.model_id = "gemini-1.5-flash-002"
+        # Usamos el nombre limpio, sin prefijos, que es el estándar actual de la SDK
+        self.model_id = "gemini-1.5-flash"
 
     def generate_personalized_recommendations(
         self,
@@ -54,12 +56,21 @@ class GeminiRecommendationService:
         """
 
         try:
+            # Forzamos la llamada sin prefijos de 'models/'
             response = self.client.models.generate_content(
                 model=self.model_id,
                 contents=prompt,
             )
             text = response.text.strip()
-            return text.replace("```json", "").replace("```", "")
+            # Limpieza para asegurar formato JSON válido
+            return text.replace("```json", "").replace("```", "").strip()
 
         except Exception as e:
-            return f'{{"error": "Error al contactar con la IA: {str(e)}"}}'
+            # Retornamos un JSON válido incluso en error para que el frontend no rompa
+            error_json = {
+                "explicacion_contextual": "No pudimos generar recomendaciones en este momento.",
+                "acciones": ["Consultar con un profesional", "Mantener hábitos básicos", "Reintentar más tarde"],
+                "tono": "informativo"
+            }
+            print(f"DEBUG - Error de IA: {str(e)}")
+            return json.dumps(error_json)
