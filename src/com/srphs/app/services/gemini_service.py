@@ -14,16 +14,10 @@ class GeminiRecommendationService:
     def __init__(self):
         api_key = os.getenv("GEMINI_API_KEY")
         if not api_key:
-            raise ValueError("No GEMINI_API_KEY found in environment variables")
-
+            raise ValueError("No GEMINI_API_KEY found")
+        
         self.client = Client(api_key=api_key)
-        try:
-            response = self.client.models.list()
-            self.model_id = next((m.name for m in response if "gemini-1.5-flash" in m.name), "gemini-1.5-flash")
-        except Exception:
-            self.model_id = "gemini-1.5-flash"
-            
-        print(f"DEBUG - Usando modelo detectado/fallback: {self.model_id}")
+        self.model_id = "gemini-1.5-flash-002"
 
     def generate_personalized_recommendations(
         self,
@@ -68,5 +62,4 @@ class GeminiRecommendationService:
             return text.replace("```json", "").replace("```", "")
 
         except Exception as e:
-            error_msg = str(e)
-            return f'{{"error": "Error al contactar con la IA: {error_msg}"}}'
+            return f'{{"error": "Error al contactar con la IA: {str(e)}"}}'
