@@ -18,7 +18,7 @@ class GeminiRecommendationService:
             raise ValueError("No GEMINI_API_KEY found")
         
         self.client = Client(api_key=api_key)
-        self.model_id = "gemini-1.5-flash"
+        self.model_id = "gemini-3.5-flash"
         
         print(f"DEBUG - Inicializando servicio con modelo: {self.model_id}")
         
